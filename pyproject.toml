@@ -1,0 +1,8 @@
+[project]
+name = "comfyui-pan2-promptwriter"
+description = "Rewrite rough scene ideas into PAN2's structured JSON positive/negative prompts with a local LLM text encoder."
+version = "1.0.0"
+license = { text = "Apache-2.0" }
+
+[project.urls]
+Repository = "https://github.com/benjiyaya/ComfyUI-PAN2-PromptWriter"
