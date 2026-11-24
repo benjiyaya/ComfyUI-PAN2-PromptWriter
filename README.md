@@ -25,6 +25,8 @@ Restart ComfyUI. The node appears as **PAN2 Prompt Writer** under `text/pan2`.
 
 ## Quick start
 
+The fastest path is the bundled example workflow (below). To wire it manually:
+
 1. **CLIP Loader** — load your rewriter LLM as a text encoder (type `pan2` for Qwen3.5-9B).
 2. **PAN2 Prompt Writer** — connect the `clip`, type your idea, set `duration`. For image-to-video, also connect the first-frame `image`.
 3. **CLIP Loader** (type `pan2`, the PAN2 text encoder) → two **CLIP Text Encode** nodes for the writer's `positive_prompt` / `negative_prompt` outputs.
@@ -35,6 +37,15 @@ CLIP Loader (pan2 / Qwen3.5-9B) ──► PAN2 Prompt Writer ──► positive 
 LoadImage (optional, first frame) ──┘        ▲              negative ──► CLIP Text Encode ─┘
                                      your prompt text
 ```
+
+## Example workflow
+
+[`example_workflow/pan2_t2v_i2v_WithPromptWriter.json`](example_workflow/pan2_t2v_i2v_WithPromptWriter.json) — drag it onto the ComfyUI canvas. It is a complete end-to-end PAN2 pipeline with both modes built in:
+
+- **T2V and I2V in one graph.** The rgthree **Fast Groups Bypasser** toggles between the text-to-video branch (`EmptyHunyuanLatentVideo`) and the image-to-video branch (`LoadImage` → resize → `Wan22ImageToVideoLatent`). Only one branch is active at a time.
+- **PAN2 Prompt Writer** in the middle: a multiline primitive carries your idea, a float primitive sets the duration and feeds a math expression that computes the frame count for both latent nodes, and the writer's positive/negative outputs are shown in two preview nodes before conditioning.
+- **Models referenced** (rename to your local files): `diffusion_models/pan2_int8_convrot.safetensors`, `text_encoders/qwen3.5_9b_int8_convrot.safetensors` (CLIP Loader type `pan2`, shared by the writer and both text encoders), `vae/Wan2.2_VAE.safetensors`.
+- **Sampler defaults from the PAN2 docs:** 50 steps, CFG 2.5, euler/simple, 24 fps (e.g. 704×1248, 241 frames ≈ 10 s; up to 481 frames / 20 s). For I2V, temporal latent 0 uses the positive prediction without guidance.
 
 ## Node reference: PAN2 Prompt Writer
 
